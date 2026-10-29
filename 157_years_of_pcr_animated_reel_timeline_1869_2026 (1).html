@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From DNA to PCR: 157 Years of Discovery — Animated Reel Timeline (1869–2026)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121215;
+      color: #f4f1ea;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
+    /* Responsive 9:16 Reel Stage */
+    .reel-wrapper {
+      aspect-ratio: 9 / 16;
+      height: calc(100vh - 104px);
+      max-height: 920px;
+      max-width: calc(100vw - 24px);
+      width: auto;
+      position: relative;
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.09);
+      background: #05050c;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    body.clean-mode .reel-wrapper {
+      height: 96vh;
+      max-height: 96vh;
+      border-radius: 22px;
+    }
+    body.clean-mode .ui-chrome {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+    }
+    #reelCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+    .clean-exit-pill {
+      display: none;
+    }
+    body.clean-mode .clean-exit-pill {
+      display: flex;
+    }
+    /* Custom thin range input */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.14);
+      height: 5px;
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f4f1ea;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    .code-scroll {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    body {display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:8px 12px;gap:8px}
+    header,footer {width:min(100%,896px)}
+    header {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    header>div,footer>div {display:flex;align-items:center;gap:8px}
+    main {display:flex;align-items:center;justify-content:center;width:100%;flex:1}
+    button {cursor:pointer;background:#27272a;color:#eee;border:1px solid #45454b;border-radius:8px;padding:6px 10px}
+    h1 {font-size:13px} h2 {font-size:15px} p {font-size:12px}
+    footer {padding:12px;background:#18181b;border-radius:16px}
+    footer .flex-1 {flex:1;min-width:0} input[type=range] {width:100%}
+    #uiCurrentYear,#uiTimeReadout {font-size:11px} #uiTimeReadout {float:right}
+    #milestoneModal,#pythonModal {position:fixed;inset:0;z-index:50;background:#000c;align-items:center;justify-content:center;padding:16px}
+    #milestoneModal>div,#pythonModal>div {background:#18181b;border:1px solid #555;border-radius:16px;width:min(95vw,720px);max-height:84vh;display:flex;flex-direction:column;overflow:hidden;padding:16px}
+    #milestoneList,#pythonCodeBlock {overflow:auto} #milestoneList>button {display:block;width:100%;text-align:left;margin-top:8px}
+    #pythonCodeBlock {white-space:pre-wrap;font-size:12px}
+    #toastBanner {position:fixed;bottom:80px;left:20px;background:#064e3b;padding:12px;border-radius:12px;z-index:60}
+    .hidden {display:none!important} .flex {display:flex}
+    #btnExitClean {position:fixed;right:16px;top:16px;z-index:40}
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between py-2 px-3 bg-[#121215] text-zinc-100">
+
+  <!-- Top Mini Bar (hidden in Clean Reel Mode) -->
+  <header class="ui-chrome w-full max-w-4xl flex flex-wrap items-center justify-between gap-2 px-2 py-1 transition-all duration-300">
+    <div class="flex items-center gap-2.5">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <h1 class="text-xs sm:text-sm font-semibold tracking-tight text-zinc-200">
+        From DNA to PCR: 157 Years of Discovery <span class="text-zinc-500 font-normal">· 9:16 Instagram Reel / Story (1080×1920)</span>
+      </h1>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button id="btnMilestoneModal" type="button" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 border border-white/10 transition">
+        Milestones & sources
+      </button>
+      <button id="btnPythonModal" type="button" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-800/90 hover:bg-zinc-700 text-amber-300 border border-amber-400/20 transition">
+        Python MP4 Script
+      </button>
+      <button id="btnRecordVideo" type="button" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 transition flex items-center gap-1.5">
+        <span id="recordDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span id="recordLabel">Export .WebM</span>
+      </button>
+      <button id="btnCleanMode" type="button" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-800/90 hover:bg-zinc-700 text-zinc-300 border border-white/10 transition" title="Hide controls for screen recording">
+        Clean Frame
+      </button>
+    </div>
+  </header>
+
+  <!-- Floating Exit Button when in Clean Mode -->
+  <button id="btnExitClean" type="button" class="clean-exit-pill fixed top-3 right-3 z-40 items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-black/70 hover:bg-black/90 text-zinc-300 border border-white/15 backdrop-blur-md transition">
+    Show Controls (Esc)
+  </button>
+
+  <!-- Center 9:16 Reel Stage -->
+  <main class="flex-1 flex items-center justify-center w-full my-1">
+    <div class="reel-wrapper" id="reelStage">
+      <canvas id="reelCanvas" width="1080" height="1920"></canvas>
+    </div>
+  </main>
+
+  <!-- Bottom Scrubbing & Transport Bar (hidden in Clean Reel Mode) -->
+  <footer class="ui-chrome w-full max-w-2xl bg-zinc-900/90 border border-white/10 rounded-2xl px-3.5 py-2 backdrop-blur-md shadow-xl transition-all duration-300">
+    <div class="flex items-center gap-3">
+      <button id="btnPlayPause" type="button" class="w-8 h-8 rounded-xl bg-white text-zinc-950 hover:bg-zinc-200 flex items-center justify-center font-bold text-xs transition shrink-0" title="Play / Pause (Space)">
+        <span id="playIcon">❚❚</span>
+      </button>
+      <button id="btnRestart" type="button" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 flex items-center justify-center text-sm transition shrink-0" title="Restart from 1869">
+        ↺
+      </button>
+
+      <!-- Timeline Scrubber -->
+      <div class="flex-1 flex flex-col gap-1">
+        <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+          <span id="uiCurrentYear" class="text-amber-300 font-semibold">1869 · Nuclein</span>
+          <span id="uiTimeReadout">00:00 / 01:30</span>
+        </div>
+        <input id="timeScrubber" type="range" min="0" max="90" step="0.05" value="0" class="w-full" />
+      </div>
+
+      <!-- Speed Selector -->
+      <div class="flex items-center gap-1 bg-zinc-800/80 p-0.5 rounded-lg border border-white/5 shrink-0">
+        <button type="button" data-speed="1" class="speed-btn px-2 py-1 rounded-md text-[11px] font-mono bg-zinc-700 text-white transition">1x</button>
+        <button type="button" data-speed="1.5" class="speed-btn px-2 py-1 rounded-md text-[11px] font-mono text-zinc-400 hover:text-white transition">1.5x</button>
+        <button type="button" data-speed="2" class="speed-btn px-2 py-1 rounded-md text-[11px] font-mono text-zinc-400 hover:text-white transition">2x</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Banner -->
+  <div id="toastBanner" class="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full bg-emerald-950/95 border border-emerald-400/40 text-emerald-200 text-xs font-medium shadow-2xl">
+    <span id="toastText">Recording started...</span>
+  </div>
+
+  <!-- Milestone Jump Drawer Modal -->
+  <div id="milestoneModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-zinc-900 border border-white/15 rounded-2xl max-w-lg w-full max-h-[82vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+        <div>
+          <h2 class="text-sm font-semibold text-white">Milestones & scientific sources</h2>
+          <p class="text-xs text-zinc-400">Select a milestone to play it; source links open the evidence.</p>
+        </div>
+        <button id="btnCloseMilestones" type="button" class="px-2.5 py-1 rounded-lg text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300">Close</button>
+      </div>
+      <div id="milestoneList" class="p-3 overflow-y-auto divide-y divide-white/5 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- Python Script Modal -->
+  <div id="pythonModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-zinc-900 border border-white/15 rounded-2xl max-w-2xl w-full max-h-[84vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+        <div>
+          <h2 class="text-sm font-semibold text-white">Python MP4 Exporter (Playwright + FFmpeg)</h2>
+          <p class="text-xs text-zinc-400">Renders the actual HTML canvas at 1080×1920; setup and usage are in the script.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnCopyPython" type="button" class="px-3 py-1 rounded-lg text-xs font-medium bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 transition">
+            Copy Python Code
+          </button>
+          <button id="btnClosePython" type="button" class="px-2.5 py-1 rounded-lg text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300">Close</button>
+        </div>
+      </div>
+      <pre id="pythonCodeBlock" class="code-scroll p-4 text-[11px] font-mono text-zinc-300 bg-zinc-950 overflow-auto leading-relaxed"></pre>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. HISTORICAL DATASET: 157 YEARS OF DNA & PCR (1869 – 2026)
+    // =========================================================================
+    const TOTAL_DURATION = 90.0; // 90 seconds total Reel duration (matches reference video)
+    const INTRO_DURATION = 3.2;  // 0.0s to 3.2s opening title card
+    const HORIZON_Y = 1045;      // Y-coordinate of the active present comet heads
+    const LEFT_AXIS_X = 94;      // X-coordinate of the scrolling left year scale
+
+    // 20 sourced milestones: discoveries, demonstrations and a research frontier.
+    const MILESTONES = [
+  {
+    "tStart": 3.2,
+    "year": 1869,
+    "title": "Discovery of nuclein",
+    "subtitle": "Friedrich Miescher · isolated from white blood cells",
+    "pulseStream": "dna",
+    "pulseColor": "#e2e8f0",
+    "source": "https://www.genome.gov/25520232/online-education-kit-1869-dna-first-isolated"
+  },
+  {
+    "tStart": 7,
+    "year": 1885,
+    "title": "Adenine identified",
+    "subtitle": "Albrecht Kossel · nucleic-acid chemistry takes shape",
+    "pulseStream": "dna",
+    "pulseColor": "#60a5fa",
+    "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2599350/"
+  },
+  {
+    "tStart": 11,
+    "year": 1944,
+    "title": "DNA is the transforming principle",
+    "subtitle": "Avery, MacLeod & McCarty · bacterial heredity",
+    "pulseStream": "dna",
+    "pulseColor": "#60a5fa",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/19871359/"
+  },
+  {
+    "tStart": 15,
+    "year": 1950,
+    "title": "Chargaff’s ratios: A ≈ T, G ≈ C",
+    "subtitle": "Base composition offers a clue to DNA structure",
+    "pulseStream": "dna",
+    "pulseColor": "#93c5fd",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/15416834/"
+  },
+  {
+    "tStart": 19.2,
+    "year": 1953,
+    "title": "The DNA double-helix model",
+    "subtitle": "Watson & Crick · X-ray work by Franklin, Wilkins & colleagues",
+    "pulseStream": "dna",
+    "pulseColor": "#fef08a",
+    "source": "https://www.nature.com/articles/171737a0"
+  },
+  {
+    "tStart": 24,
+    "year": 1956,
+    "title": "Enzymatic DNA synthesis",
+    "subtitle": "Kornberg and colleagues · E. coli DNA polymerase",
+    "pulseStream": "poly",
+    "pulseColor": "#fbbf24",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/13363894/"
+  },
+  {
+    "tStart": 28.8,
+    "year": 1969,
+    "title": "Thermus aquaticus described",
+    "subtitle": "Brock & Freeze · a bacterium from hot springs",
+    "pulseStream": "taq",
+    "pulseColor": "#fb923c",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/5781580/"
+  },
+  {
+    "tStart": 33.6,
+    "year": 1971,
+    "title": "A two-primer copying proposal",
+    "subtitle": "Kleppe and colleagues · a conceptual precursor to PCR",
+    "pulseStream": "primers",
+    "pulseColor": "#a78bfa",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/4927950/"
+  },
+  {
+    "tStart": 38.2,
+    "year": 1976,
+    "title": "Taq DNA polymerase purified",
+    "subtitle": "Chien, Edgar & Trela · a thermostable enzyme",
+    "pulseStream": "taq",
+    "pulseColor": "#f97316",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/8432/"
+  },
+  {
+    "tStart": 42.6,
+    "year": 1977,
+    "title": "Reading DNA sequences",
+    "subtitle": "Sanger, Nicklen & Coulson · chain termination",
+    "pulseStream": "sanger",
+    "pulseColor": "#38bdf8",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/271968/"
+  },
+  {
+    "tStart": 47.2,
+    "year": 1983,
+    "title": "PCR conceived",
+    "subtitle": "Kary Mullis · repeated cycles amplify a DNA target",
+    "pulseStream": "pcr",
+    "pulseColor": "#34d399",
+    "source": "https://www.nobelprize.org/prizes/chemistry/1993/mullis/lecture/"
+  },
+  {
+    "tStart": 52.8,
+    "year": 1985,
+    "title": "PCR for sickle-cell mutation analysis",
+    "subtitle": "Saiki et al. · β-globin amplification and restriction analysis",
+    "pulseStream": "diag",
+    "pulseColor": "#38bdf8",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/2999980/"
+  },
+  {
+    "tStart": 57.5,
+    "year": 1988,
+    "title": "Thermostable PCR simplifies cycling",
+    "subtitle": "Saiki et al. · Taq removes repeated enzyme addition",
+    "pulseStream": "pcr",
+    "pulseColor": "#fbbf24",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/2448875/"
+  },
+  {
+    "tStart": 62.2,
+    "year": 1988,
+    "title": "Reverse transcription meets PCR",
+    "subtitle": "Rappolee et al. · an early application: RNA → cDNA → PCR",
+    "pulseStream": "rtpcr",
+    "pulseColor": "#f472b6",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/3041594/"
+  },
+  {
+    "tStart": 66.8,
+    "year": 1993,
+    "title": "Monitoring amplification in real time",
+    "subtitle": "Higuchi et al. · quantitative kinetic PCR; precursor in 1992",
+    "pulseStream": "qpcr",
+    "pulseColor": "#facc15",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/7764001/"
+  },
+  {
+    "tStart": 71.2,
+    "year": 1999,
+    "title": "Digital PCR: partition and count",
+    "subtitle": "Vogelstein & Kinzler · positive reactions reveal target abundance",
+    "pulseStream": "dpcr",
+    "pulseColor": "#c084fc",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/10430926/"
+  },
+  {
+    "tStart": 75.5,
+    "year": 2005,
+    "title": "Emulsion PCR powers sequencing",
+    "subtitle": "Margulies et al. · massively parallel DNA sequencing",
+    "pulseStream": "ngs",
+    "pulseColor": "#fb7185",
+    "source": "https://www.nature.com/articles/nature03959"
+  },
+  {
+    "tStart": 79.5,
+    "year": 2011,
+    "title": "~20,000 droplets per sample",
+    "subtitle": "Hindson et al. · high-throughput droplet digital PCR",
+    "pulseStream": "dpcr",
+    "pulseColor": "#a855f7",
+    "source": "https://pubmed.ncbi.nlm.nih.gov/22035192/"
+  },
+  {
+    "tStart": 83.2,
+    "year": 2020,
+    "title": "RT-qPCR in the COVID-19 response",
+    "subtitle": "Reverse transcription + real-time PCR detect viral RNA",
+    "pulseStream": "rtpcr",
+    "pulseColor": "#fde047",
+    "source": "https://doi.org/10.2807/1560-7917.ES.2020.25.3.2000045"
+  },
+  {
+    "tStart": 86.8,
+    "year": 2026,
+    "title": "Research frontier: faster RT-qPCR",
+    "subtitle": "Plasmonic thermocycling · point-of-care prototypes",
+    "pulseStream": "pcr",
+    "pulseColor": "#34d399",
+    "source": "https://pubs.acs.org/doi/10.1021/acsami.6c04810"
+  }
+];
+
+    // Non-linear visual scroll mapping: yOffset(year) gives cumulative vertical pixels
+    // so early sparse decades (1869-1944) scroll compactly and modern PCR decades (1953-2026) have rich spacing
+    const YEAR_ANCHORS = [...new Set(MILESTONES.map(m => m.year))].map((year, i) => ({year, px: i * 205}));
+
+    function yearToScrollPx(y) {
+      if (y <= YEAR_ANCHORS[0].year) return YEAR_ANCHORS[0].px;
+      for (let i = 0; i < YEAR_ANCHORS.length - 1; i++) {
+        const a = YEAR_ANCHORS[i];
+        const b = YEAR_ANCHORS[i + 1];
+        if (y >= a.year && y <= b.year) {
+          const u = (y - a.year) / Math.max(0.0001, b.year - a.year);
+          return a.px + u * (b.px - a.px);
+        }
+      }
+      const last = YEAR_ANCHORS[YEAR_ANCHORS.length - 1];
+      return last.px + (y - last.year) * 42;
+    }
+
+    // Smooth time -> year interpolation across milestones
+    function timeToYear(t) {
+      if (t <= INTRO_DURATION) return 1869;
+      for (let i = 0; i < MILESTONES.length - 1; i++) {
+        const cur = MILESTONES[i];
+        const nxt = MILESTONES[i + 1];
+        if (t >= cur.tStart && t <= nxt.tStart) {
+          const u = (t - cur.tStart) / (nxt.tStart - cur.tStart);
+          // Smooth easing with steady progression
+          const smoothU = 0.35 * u + 0.65 * (u * u * (3 - 2 * u));
+          return cur.year + smoothU * (nxt.year - cur.year);
+        }
+      }
+      return 2026;
+    }
+
+    // Active milestone lookup for top text display
+    function getActiveMilestoneIndex(t) {
+      if (t < INTRO_DURATION) return -1;
+      let idx = 0;
+      for (let i = 0; i < MILESTONES.length; i++) {
+        if (t >= MILESTONES[i].tStart) idx = i;
+      }
+      return idx;
+    }
+
+    // =========================================================================
+    // 2. TECHNOLOGICAL STREAMS (BRANCHING & CONVERGING COMET TRAILS)
+    // =========================================================================
+    // Each stream defines its birth year, optional end year, parent stream, lane X, and color
+    const STREAMS = [
+  {
+    "id": "dna",
+    "label": "DNA & Templates",
+    "shortLabel": "DNA",
+    "color": "#60a5fa",
+    "glow": "rgba(96, 165, 250, 0.55)",
+    "yStart": 1869,
+    "yEnd": 2026,
+    "xOrigin": 540,
+    "waypoints": [
+      {
+        "y": 1869,
+        "x": 540
+      },
+      {
+        "y": 1950,
+        "x": 510
+      },
+      {
+        "y": 1956,
+        "x": 430
+      },
+      {
+        "y": 1971,
+        "x": 350
+      },
+      {
+        "y": 1983,
+        "x": 265
+      },
+      {
+        "y": 2000,
+        "x": 215
+      },
+      {
+        "y": 2026,
+        "x": 205
+      }
+    ]
+  },
+  {
+    "id": "poly",
+    "label": "Polymerases",
+    "shortLabel": "Polymerase",
+    "color": "#fbbf24",
+    "glow": "rgba(251, 191, 36, 0.55)",
+    "yStart": 1956,
+    "yEnd": 1988.2,
+    "xOrigin": 430,
+    "waypoints": [
+      {
+        "y": 1956,
+        "x": 430
+      },
+      {
+        "y": 1962,
+        "x": 585
+      },
+      {
+        "y": 1977,
+        "x": 575
+      },
+      {
+        "y": 1983,
+        "x": 555
+      },
+      {
+        "y": 1988.2,
+        "x": 500
+      }
+    ]
+  },
+  {
+    "id": "taq",
+    "label": "Thermophiles & Taq",
+    "shortLabel": "Thermophiles / Taq",
+    "color": "#fb923c",
+    "glow": "rgba(251, 146, 60, 0.55)",
+    "yStart": 1969,
+    "yEnd": 1988.4,
+    "xOrigin": 775,
+    "waypoints": [
+      {
+        "y": 1969,
+        "x": 775
+      },
+      {
+        "y": 1976,
+        "x": 765
+      },
+      {
+        "y": 1984,
+        "x": 740
+      },
+      {
+        "y": 1988.4,
+        "x": 500
+      }
+    ]
+  },
+  {
+    "id": "primers",
+    "label": "Primers",
+    "shortLabel": "Primers",
+    "color": "#a78bfa",
+    "glow": "rgba(167, 139, 250, 0.55)",
+    "yStart": 1971,
+    "yEnd": 1983.4,
+    "xOrigin": 350,
+    "waypoints": [
+      {
+        "y": 1971,
+        "x": 350
+      },
+      {
+        "y": 1975,
+        "x": 445
+      },
+      {
+        "y": 1981,
+        "x": 455
+      },
+      {
+        "y": 1983.4,
+        "x": 500
+      }
+    ]
+  },
+  {
+    "id": "sanger",
+    "label": "Sanger",
+    "shortLabel": "Sanger",
+    "color": "#38bdf8",
+    "glow": "rgba(56, 189, 248, 0.5)",
+    "yStart": 1977,
+    "yEnd": 2026,
+    "xOrigin": 575,
+    "waypoints": [
+      {
+        "y": 1977,
+        "x": 575
+      },
+      {
+        "y": 1981,
+        "x": 880
+      },
+      {
+        "y": 1999,
+        "x": 915
+      },
+      {
+        "y": 2026,
+        "x": 915
+      }
+    ]
+  },
+  {
+    "id": "pcr",
+    "label": "Core PCR",
+    "shortLabel": "PCR",
+    "color": "#34d399",
+    "glow": "rgba(52, 211, 153, 0.65)",
+    "yStart": 1983,
+    "yEnd": 2026,
+    "xOrigin": 500,
+    "waypoints": [
+      {
+        "y": 1983,
+        "x": 500
+      },
+      {
+        "y": 1990,
+        "x": 490
+      },
+      {
+        "y": 2000,
+        "x": 470
+      },
+      {
+        "y": 2026,
+        "x": 465
+      }
+    ]
+  },
+  {
+    "id": "diag",
+    "label": "Diagnostics",
+    "shortLabel": "Diagnostics",
+    "color": "#38bdf8",
+    "glow": "rgba(56, 189, 248, 0.55)",
+    "yStart": 1985,
+    "yEnd": 2026,
+    "xOrigin": 498,
+    "waypoints": [
+      {
+        "y": 1985,
+        "x": 498
+      },
+      {
+        "y": 1989,
+        "x": 355
+      },
+      {
+        "y": 2005,
+        "x": 340
+      },
+      {
+        "y": 2026,
+        "x": 335
+      }
+    ]
+  },
+  {
+    "id": "rtpcr",
+    "label": "RT-PCR",
+    "shortLabel": "RT-PCR",
+    "color": "#f472b6",
+    "glow": "rgba(244, 114, 182, 0.55)",
+    "yStart": 1988,
+    "yEnd": 2026,
+    "xOrigin": 490,
+    "waypoints": [
+      {
+        "y": 1988,
+        "x": 490
+      },
+      {
+        "y": 1994,
+        "x": 605
+      },
+      {
+        "y": 2010,
+        "x": 595
+      },
+      {
+        "y": 2026,
+        "x": 595
+      }
+    ]
+  },
+  {
+    "id": "qpcr",
+    "label": "Real-Time qPCR",
+    "shortLabel": "qPCR",
+    "color": "#facc15",
+    "glow": "rgba(250, 204, 21, 0.55)",
+    "yStart": 1993,
+    "yEnd": 2026,
+    "xOrigin": 485,
+    "waypoints": [
+      {
+        "y": 1993,
+        "x": 485
+      },
+      {
+        "y": 1997,
+        "x": 730
+      },
+      {
+        "y": 2012,
+        "x": 725
+      },
+      {
+        "y": 2026,
+        "x": 725
+      }
+    ]
+  },
+  {
+    "id": "dpcr",
+    "label": "Digital PCR",
+    "shortLabel": "Digital PCR",
+    "color": "#c084fc",
+    "glow": "rgba(192, 132, 252, 0.55)",
+    "yStart": 1999,
+    "yEnd": 2026,
+    "xOrigin": 470,
+    "waypoints": [
+      {
+        "y": 1999,
+        "x": 470
+      },
+      {
+        "y": 2004,
+        "x": 820
+      },
+      {
+        "y": 2026,
+        "x": 820
+      }
+    ]
+  },
+  {
+    "id": "ngs",
+    "label": "PCR-enabled sequencing",
+    "shortLabel": "NGS",
+    "color": "#fb7185",
+    "glow": "rgba(251, 113, 133, 0.55)",
+    "yStart": 2005,
+    "yEnd": 2026,
+    "xOrigin": 470,
+    "waypoints": [
+      {
+        "y": 2005,
+        "x": 470
+      },
+      {
+        "y": 2008,
+        "x": 1000
+      },
+      {
+        "y": 2026,
+        "x": 1000
+      }
+    ]
+  }
+];
+
+    // Smooth cosine-interpolated X coordinate for stream s at historical year y
+    function getStreamX(stream, y) {
+      const pts = stream.waypoints;
+      if (y <= pts[0].y) return pts[0].x;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        if (y >= a.y && y <= b.y) {
+          const u = (y - a.y) / Math.max(0.0001, b.y - a.y);
+          const sCurve = 0.5 - 0.5 * Math.cos(Math.PI * u);
+          const base = a.x + sCurve * (b.x - a.x);
+          // Subtle organic micro-wave along the vertical trail (zero at endpoints so merges stay exact)
+          const edgeDamp = Math.min(1, (y - stream.yStart) * 0.8) * Math.min(1, (stream.yEnd - y) * 0.8);
+          const wobble = Math.sin(y * 0.65 + stream.xOrigin * 0.03) * 3.2 * Math.max(0, edgeDamp);
+          return base + wobble;
+        }
+      }
+      return pts[pts.length - 1].x;
+    }
+
+    // =========================================================================
+    // 3. UPPER SKY CONSTELLATION STARS (PIONEERS & COMPLETED MILESTONES)
+    // =========================================================================
+    // Like "Alan Turing", "Expert systems", "Deep Blue", "AlphaGo" in the reference video
+    const CONSTELLATION_STARS = [
+  {
+    "label": "Friedrich Miescher",
+    "spawnYear": 1885,
+    "fromX": 540,
+    "skyX": 245,
+    "skyY": 640
+  },
+  {
+    "label": "DNA structure · 1953",
+    "spawnYear": 1956,
+    "fromX": 430,
+    "skyX": 775,
+    "skyY": 625
+  },
+  {
+    "label": "Kary Mullis · 1983",
+    "spawnYear": 1988.2,
+    "fromX": 500,
+    "skyX": 395,
+    "skyY": 745
+  },
+  {
+    "label": "Thermus aquaticus",
+    "spawnYear": 1988.5,
+    "fromX": 520,
+    "skyX": 565,
+    "skyY": 675
+  }
+];
+
+    // =========================================================================
+    // 4. ERA ATMOSPHERIC BANDS (LIKE "AI WINTER" IN REFERENCE VIDEO)
+    // =========================================================================
+    const ERA_BANDS = [
+  {
+    "label": "EARLY PCR DEVELOPMENT",
+    "yStart": 1983,
+    "yEnd": 1988,
+    "tint": "rgba(148, 163, 184, 0.075)"
+  },
+  {
+    "label": "EARLY COVID-19 RESPONSE",
+    "yStart": 2019.8,
+    "yEnd": 2022.8,
+    "tint": "rgba(250, 204, 21, 0.075)"
+  }
+];
+
+    // Left Axis Year Tick Marks
+    const ORIGINAL_AXIS_YEARS = [
+      1869, 1880, 1890, 1900, 1910, 1920, 1930, 1940, 1944, 1950,
+      1953, 1956, 1960, 1965, 1969, 1971, 1974, 1976, 1977, 1980,
+      1983, 1985, 1987, 1988, 1990, 1992, 1993, 1995, 1997, 1999,
+      2001, 2003, 2006, 2009, 2011, 2014, 2017, 2020, 2023, 2026
+    ];
+
+    const AXIS_YEARS = [...new Set([...ORIGINAL_AXIS_YEARS, ...MILESTONES.map(m => m.year)])].sort((a,b) => a-b);
+    const MILESTONE_YEARS_SET = new Set(MILESTONES.map(m => m.year));
+
+    // =========================================================================
+    // 5. BACKGROUND STARFIELD PARTICLES
+    // =========================================================================
+    const BG_STARS = Array.from({ length: 170 }, (_, i) => ({
+      x: (Math.sin(i * 127.1 + 311.7) * 43758.5453 % 1 + 1) % 1 * 1080,
+      y: (Math.sin(i * 269.5 + 183.3) * 43758.5453 % 1 + 1) % 1 * 1920,
+      r: 0.6 + ((i * 19) % 10) * 0.14,
+      alpha: 0.15 + ((i * 37) % 10) * 0.06,
+      twinkleSpeed: 0.8 + ((i * 13) % 7) * 0.35,
+      phase: i * 0.9
+    }));
+
+    // =========================================================================
+    // 6. CANVAS RENDERING ENGINE
+    // =========================================================================
+    const canvas = document.getElementById('reelCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentTime = 0.0;
+    let isPlaying = true;
+    let playbackSpeed = 1.0;
+    let lastFrameTs = performance.now();
+
+    function drawBackground(t, curScrollPx) {
+      // Deep cosmic gradient base
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, 1920);
+      bgGrad.addColorStop(0, '#05050b');
+      bgGrad.addColorStop(0.45, '#090817');
+      bgGrad.addColorStop(0.8, '#0c0b1e');
+      bgGrad.addColorStop(1, '#05050a');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Subtle purple-indigo cosmic nebula glow on right/center (matches reference video)
+      const nebGrad = ctx.createRadialGradient(720, 920, 40, 680, 920, 760);
+      nebGrad.addColorStop(0, 'rgba(68, 48, 125, 0.19)');
+      nebGrad.addColorStop(0.5, 'rgba(38, 28, 82, 0.09)');
+      nebGrad.addColorStop(1, 'rgba(5, 5, 12, 0)');
+      ctx.fillStyle = nebGrad;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Parallax background stars
+      for (const s of BG_STARS) {
+        const py = (s.y + curScrollPx * 0.08) % 1920;
+        const tw = 0.65 + 0.35 * Math.sin(t * s.twinkleSpeed + s.phase);
+        ctx.fillStyle = `rgba(235, 238, 255, ${(s.alpha * tw).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(s.x, py, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawTopBar(t) {
+      ctx.save();
+      ctx.font = '500 26px "Inter", sans-serif';
+      ctx.fillStyle = 'rgba(244, 241, 234, 0.82)';
+      ctx.textAlign = 'left';
+      ctx.fillText('DNA → PCR · a history of discovery', 64, 88);
+
+      // Countdown timer on top-right (1:30 -> 0:00)
+      const rem = Math.max(0, Math.ceil(TOTAL_DURATION - t));
+      const mins = Math.floor(rem / 60);
+      const secs = rem % 60;
+      const timerStr = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+      ctx.textAlign = 'right';
+      ctx.font = '600 26px "Inter", sans-serif';
+      ctx.fillText(timerStr, 1016, 88);
+      ctx.restore();
+    }
+
+    function fitText(text, x, y, width, size, family, weight) {
+      do { ctx.font = `${weight} ${size}px "${family}", sans-serif`; size -= 1; }
+      while (ctx.measureText(text).width > width && size > 25);
+      ctx.fillText(text, x, y);
+    }
+    function wrapText(text, x, y, width, lineHeight) {
+      let line = '', lines = [];
+      for (const word of text.split(' ')) {
+        const candidate = line ? line + ' ' + word : word;
+        if (ctx.measureText(candidate).width > width && line) { lines.push(line); line = word; }
+        else line = candidate;
+      }
+      lines.push(line);
+      lines.forEach((line, i) => ctx.fillText(line, x, y + i * lineHeight));
+    }
+    function drawScientificNotes(t) {
+      ctx.save(); ctx.textAlign='center';
+      ctx.fillStyle='rgba(5,5,12,0.88)'; ctx.fillRect(0,1797,1080,123);
+      ctx.font='400 20px "Inter", sans-serif'; ctx.fillStyle='rgba(226,232,240,0.65)';
+      ctx.fillText('Schematic contributions & applications · time spacing is nonlinear', 540, 1830);
+      ctx.fillText('Tracks merging do not mean a technology ended.', 540, 1862);
+      if (t >= 83.2 && t < 86.8) {
+        ctx.font='600 30px "Inter", sans-serif'; ctx.fillStyle='#f4f1ea';
+        ctx.fillText('Reverse transcription + qPCR = RT-qPCR', 540, 900);
+        ctx.font='400 23px "Inter", sans-serif';
+        ctx.fillText('RNA → cDNA → amplification monitored by fluorescence', 540, 938);
+      }
+      ctx.restore();
+    }
+
+    function drawIntroCard(t) {
+      if (t >= INTRO_DURATION + 0.6) return;
+      let alpha = 1;
+      if (t > INTRO_DURATION - 0.5) {
+        alpha = Math.max(0, 1 - (t - (INTRO_DURATION - 0.5)) / 0.8);
+      }
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = 'center';
+
+      // "From DNA to PCR."
+      ctx.font = '400 92px "Cormorant Garamond", Georgia, serif';
+      ctx.fillStyle = '#f4f1ea';
+      ctx.fillText('From DNA to PCR.', 540, 380);
+
+      // "90 seconds." fades in at t = 0.85s
+      if (t > 0.75) {
+        const subAlpha = Math.min(1, (t - 0.75) / 0.7);
+        ctx.globalAlpha = alpha * subAlpha;
+        ctx.font = 'italic 400 54px "Cormorant Garamond", Georgia, serif';
+        ctx.fillStyle = '#d69e5c';
+        ctx.fillText('157 years of discovery · 1869–2026', 540, 462);
+      }
+      ctx.restore();
+    }
+
+    function drawMilestoneHeader(t) {
+      const idx = getActiveMilestoneIndex(t);
+      if (idx < 0) return;
+      const m = MILESTONES[idx];
+      const dt = t - m.tStart;
+      const fadeIn = Math.min(1, dt / 0.45);
+
+      // Smooth fade-out right before the next milestone
+      let fadeOut = 1;
+      if (idx < MILESTONES.length - 1) {
+        const timeToNext = MILESTONES[idx + 1].tStart - t;
+        if (timeToNext < 0.35) {
+          fadeOut = Math.max(0, timeToNext / 0.35);
+        }
+      }
+      const alpha = fadeIn * fadeOut;
+      const slideY = (1 - fadeIn) * 14;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = 'center';
+
+      // Giant Classical Serif Year
+      ctx.font = '400 124px "Cormorant Garamond", Georgia, serif';
+      ctx.fillStyle = '#f4f1ea';
+      ctx.fillText(String(m.year), 540, 365 + slideY);
+
+      // Bold Clean Sans Event Headline
+      ctx.font = '600 40px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      fitText(m.title, 540, 442 + slideY, 950, 40, "Inter", 600);
+
+      // Tracked Monospace Attribution
+      ctx.font = '400 22px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(226, 232, 240, 0.62)';
+      wrapText(m.subtitle, 540, 492 + slideY, 930, 30);
+      ctx.font = '400 18px "Inter", sans-serif';
+      ctx.fillStyle = "rgba(226,232,240,0.58)";
+      ctx.fillText("Source " + String(idx + 1).padStart(2, "0") + " · see Milestones & sources", 540, 578);
+
+      ctx.restore();
+    }
+
+    // Draw a 4-point twinkling star in the upper constellation sky
+    function drawConstellationStars(curYear, t) {
+      ctx.save();
+      for (const star of CONSTELLATION_STARS) {
+        if (curYear < star.spawnYear) continue;
+        const progress = Math.min(1, (curYear - star.spawnYear) / 1.8);
+        // Smooth ease out cubic from horizon to sky position
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const x = star.fromX + (star.skyX - star.fromX) * ease;
+        const y = HORIZON_Y + (star.skyY - HORIZON_Y) * ease;
+
+        const twinkle = 0.78 + 0.22 * Math.sin(t * 2.6 + star.skyX);
+        ctx.globalAlpha = Math.min(1, progress * 1.4);
+
+        // Soft outer glow
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 22);
+        g.addColorStop(0, `rgba(255, 255, 255, ${0.85 * twinkle})`);
+        g.addColorStop(0.35, `rgba(190, 215, 255, ${0.32 * twinkle})`);
+        g.addColorStop(1, 'rgba(190, 215, 255, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 4-point diffraction cross rays
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.75 * twinkle})`;
+        ctx.lineWidth = 1.4;
+        const arm = 10 * twinkle;
+        ctx.beginPath();
+        ctx.moveTo(x - arm, y);
+        ctx.lineTo(x + arm, y);
+        ctx.moveTo(x, y - arm);
+        ctx.lineTo(x, y + arm);
+        ctx.stroke();
+
+        // Solid hot star center
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x, y, 2.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pioneer label below the star
+        ctx.font = '500 22px "Inter", sans-serif';
+        ctx.fillStyle = 'rgba(226, 232, 240, 0.78)';
+        ctx.textAlign = 'center';
+        ctx.fillText(star.label, x, y + 34);
+      }
+      ctx.restore();
+    }
+
+    // Draw Era Bands (e.g., MANUAL WATER BATH ERA, GLOBAL PANDEMIC RESPONSE)
+    function drawEraBands(curYear, curScrollPx) {
+      ctx.save();
+      for (const band of ERA_BANDS) {
+        if (curYear < band.yStart) continue;
+        const topYear = Math.min(curYear, band.yEnd);
+        const yTop = HORIZON_Y + (curScrollPx - yearToScrollPx(topYear));
+        const yBot = HORIZON_Y + (curScrollPx - yearToScrollPx(band.yStart));
+
+        if (yTop > 1920 || yBot < HORIZON_Y) continue;
+        const clampedTop = Math.max(HORIZON_Y, yTop);
+        const clampedBot = Math.min(1920, yBot);
+        const h = clampedBot - clampedTop;
+        if (h <= 2) continue;
+
+        ctx.fillStyle = band.tint;
+        ctx.fillRect(LEFT_AXIS_X, clampedTop, 1080 - LEFT_AXIS_X - 40, h);
+
+        // Top & bottom subtle hairlines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(LEFT_AXIS_X, clampedTop);
+        ctx.lineTo(1040, clampedTop);
+        ctx.moveTo(LEFT_AXIS_X, clampedBot);
+        ctx.lineTo(1040, clampedBot);
+        ctx.stroke();
+
+        // Band title inside left side
+        if (h > 36) {
+          ctx.font = '500 19px "JetBrains Mono", monospace';
+          ctx.fillStyle = 'rgba(226, 232, 240, 0.45)';
+          ctx.textAlign = 'left';
+          ctx.fillText(band.label, LEFT_AXIS_X + 26, clampedTop + Math.min(h * 0.55, 52));
+        }
+      }
+      ctx.restore();
+    }
+
+    // Draw Left Vertical Year Scale & Horizontal Horizon Line
+    function drawTimelineAxis(curYear, curScrollPx, t) {
+      if (t < INTRO_DURATION * 0.75) return;
+      const axisAlpha = Math.min(1, (t - INTRO_DURATION * 0.75) / 0.8);
+      ctx.save();
+      ctx.globalAlpha = axisAlpha;
+
+      // Vertical left axis line from HORIZON_Y down to bottom
+      const lineGrad = ctx.createLinearGradient(0, HORIZON_Y, 0, 1880);
+      lineGrad.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+      lineGrad.addColorStop(0.85, 'rgba(255, 255, 255, 0.12)');
+      lineGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.strokeStyle = lineGrad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(LEFT_AXIS_X, HORIZON_Y);
+      ctx.lineTo(LEFT_AXIS_X, 1880);
+      ctx.stroke();
+
+      // Present horizontal horizon line across the stage
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(LEFT_AXIS_X, HORIZON_Y);
+      ctx.lineTo(1030, HORIZON_Y);
+      ctx.stroke();
+
+      // Scrolling year labels along the left axis
+      ctx.textAlign = 'right';
+      for (const yTick of AXIS_YEARS) {
+        if (yTick > curYear + 0.15) continue;
+        const yPos = HORIZON_Y + (curScrollPx - yearToScrollPx(yTick));
+        if (yPos < HORIZON_Y - 8 || yPos > 1875) continue;
+
+        const isMilestone = MILESTONE_YEARS_SET.has(yTick);
+        const bottomFade = yPos > 1720 ? Math.max(0, 1 - (yPos - 1720) / 155) : 1;
+
+        // Faint horizontal guide line on milestone years
+        if (isMilestone) {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${(0.045 * bottomFade).toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(LEFT_AXIS_X, yPos);
+          ctx.lineTo(1020, yPos);
+          ctx.stroke();
+        }
+
+        ctx.font = isMilestone
+          ? '500 20px "JetBrains Mono", monospace'
+          : '400 18px "JetBrains Mono", monospace';
+        const textAlpha = (isMilestone ? 0.68 : 0.34) * bottomFade;
+        ctx.fillStyle = `rgba(226, 232, 240, ${textAlpha.toFixed(3)})`;
+        ctx.fillText(String(yTick), LEFT_AXIS_X - 12, yPos + 6);
+      }
+
+      ctx.restore();
+    }
+
+    // Draw all historical stream trails & active glowing comet heads
+    function drawStreamsAndHeads(curYear, curScrollPx, t) {
+      // Intro tail animation before t = INTRO_DURATION
+      if (t < INTRO_DURATION) {
+        const introU = Math.min(1, t / INTRO_DURATION);
+        const tailLen = 80 + introU * 240;
+        const x = 540;
+        ctx.save();
+        const tailGrad = ctx.createLinearGradient(x, HORIZON_Y, x, HORIZON_Y + tailLen);
+        tailGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+        tailGrad.addColorStop(0.4, 'rgba(147, 197, 253, 0.55)');
+        tailGrad.addColorStop(1, 'rgba(147, 197, 253, 0)');
+        ctx.strokeStyle = tailGrad;
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(x, HORIZON_Y);
+        ctx.lineTo(x, HORIZON_Y + tailLen);
+        ctx.stroke();
+
+        // Glowing comet head
+        drawCometHead(x, HORIZON_Y, '#ffffff', 'rgba(147, 197, 253, 0.7)', 1);
+        ctx.font = '500 25px "Inter", sans-serif';
+        ctx.fillStyle = '#f4f1ea';
+        ctx.textAlign = 'center';
+        ctx.fillText('Friedrich Miescher', x, HORIZON_Y - 28);
+        ctx.restore();
+        return;
+      }
+
+      const activeHeads = [];
+
+      for (const stream of STREAMS) {
+        if (curYear < stream.yStart) continue;
+        const maxYear = Math.min(curYear, stream.yEnd);
+
+        // Sample points along the stream from yStart to maxYear
+        const points = [];
+        const steps = 95;
+        for (let i = 0; i <= steps; i++) {
+          const y = stream.yStart + (maxYear - stream.yStart) * (i / steps);
+          const sy = HORIZON_Y + (curScrollPx - yearToScrollPx(y));
+          if (sy <= 1930 && sy >= HORIZON_Y - 2) {
+            const sx = getStreamX(stream, y);
+            points.push({ x: sx, y: sy, year: y });
+          }
+        }
+
+        if (points.length >= 2) {
+          ctx.save();
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          // Outer atmospheric colored glow stroke
+          ctx.strokeStyle = stream.glow;
+          ctx.lineWidth = 7.5;
+          ctx.globalAlpha = 0.26;
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, points[0].y);
+          for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+          }
+          ctx.stroke();
+
+          // Crisp inner core trail with vertical fade near bottom
+          const topPt = points[points.length - 1];
+          const botPt = points[0];
+          const strokeGrad = ctx.createLinearGradient(0, topPt.y, 0, Math.max(topPt.y + 40, botPt.y));
+          strokeGrad.addColorStop(0, stream.color);
+          strokeGrad.addColorStop(0.75, stream.color);
+          strokeGrad.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+
+          ctx.globalAlpha = 0.92;
+          ctx.strokeStyle = strokeGrad;
+          ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, points[0].y);
+          for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+          }
+          ctx.stroke();
+
+          // Subtle sparkling trail particles near the top 280px of each active stream
+          ctx.fillStyle = stream.color;
+          for (let k = 0; k < 8; k++) {
+            const seed = (k * 37 + stream.xOrigin) % 100;
+            const pyOffset = ((t * 36 + seed * 4.1) % 240);
+            const targetY = topPt.y + pyOffset;
+            if (targetY < botPt.y && targetY < 1850) {
+              // Find closest point
+              let best = topPt;
+              for (let i = points.length - 1; i >= 0; i--) {
+                if (points[i].y <= targetY) {
+                  best = points[i];
+                  break;
+                }
+              }
+              const jitterX = Math.sin(t * 2 + k * 9.3) * 4.5;
+              const pAlpha = Math.max(0, (1 - pyOffset / 240) * 0.55);
+              ctx.globalAlpha = pAlpha;
+              ctx.beginPath();
+              ctx.arc(best.x + jitterX, targetY, 1.4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+        }
+
+        // If stream is still active at curYear, queue its comet head & label at HORIZON_Y
+        if (curYear <= stream.yEnd + 0.08) {
+          const headX = getStreamX(stream, Math.min(curYear, stream.yEnd));
+          activeHeads.push({
+            stream,
+            x: headX,
+            y: HORIZON_Y,
+            labelX: headX,
+            labelY: HORIZON_Y - 26
+          });
+        }
+      }
+
+      // Draw Milestone Shockwave Pulse Rings around the triggered stream head
+      const mIdx = getActiveMilestoneIndex(t);
+      if (mIdx >= 0) {
+        const m = MILESTONES[mIdx];
+        const dt = t - m.tStart;
+        if (dt >= 0 && dt < 2.6) {
+          const targetHead = activeHeads.find(h => h.stream.id === m.pulseStream);
+          if (targetHead) {
+            drawPulseRings(targetHead.x, targetHead.y, m.pulseColor, dt);
+          }
+        }
+        // In 2020 COVID-19 milestone, pulse Diagnostics & qPCR simultaneously!
+        if (m.year === 2020 && dt >= 0 && dt < 2.6) {
+          for (const extraId of ['diag', 'qpcr', 'pcr']) {
+            const eh = activeHeads.find(h => h.stream.id === extraId);
+            if (eh) drawPulseRings(eh.x, eh.y, '#fde047', dt);
+          }
+        }
+      }
+
+      // Draw Comet Heads
+      for (const h of activeHeads) {
+        drawCometHead(h.x, h.y, h.stream.color, h.stream.glow, 1);
+      }
+
+      activeHeads.sort((a, b) => a.x - b.x);
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = '600 23px "Inter", sans-serif';
+      const lanes = [[], [], [], []];
+      for (const h of activeHeads) {
+        const label = h.stream.id === 'taq'
+          ? (curYear < 1976 ? 'T. aquaticus' : 'Taq polymerase')
+          : h.stream.shortLabel;
+        const w = ctx.measureText(label).width;
+        const lx = Math.max(140 + w/2, Math.min(1040 - w/2, h.x));
+        let lane = lanes.findIndex(items => items.every(r => lx-w/2 > r[1]+12 || lx+w/2 < r[0]-12));
+        if (lane < 0) lane = 3;
+        lanes[lane].push([lx-w/2, lx+w/2]);
+        const ly = HORIZON_Y - 28 - lane * 32;
+        ctx.strokeStyle = h.stream.color;
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath(); ctx.moveTo(h.x, HORIZON_Y-10); ctx.lineTo(lx, ly+5); ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = h.stream.color;
+        ctx.fillText(label, lx, ly);
+      }
+      ctx.restore();
+    }
+
+    function drawCometHead(x, y, color, glowColor, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      // Outer radial bloom
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, 28);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.22, color);
+      grad.addColorStop(0.55, glowColor);
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(x, y, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Crisp white hot core
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(x, y, 4.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // Concentric expanding shockwave rings (like 1958, 1986, 2006, 2012 in the reference video)
+    function drawPulseRings(x, y, color, dt) {
+      ctx.save();
+      const u = Math.min(1, dt / 2.4);
+
+      // Soft warm radial aura
+      const auraAlpha = Math.sin(u * Math.PI) * 0.34;
+      const auraRadius = 35 + u * 95;
+      const aura = ctx.createRadialGradient(x, y, 2, x, y, auraRadius);
+      aura.addColorStop(0, color);
+      aura.addColorStop(0.5, 'rgba(251, 191, 36, 0.18)');
+      aura.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.globalAlpha = auraAlpha;
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.arc(x, y, auraRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Primary expanding ring
+      const r1 = 10 + Math.pow(u, 0.75) * 105;
+      const a1 = Math.max(0, (1 - u) * 0.65);
+      ctx.globalAlpha = a1;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(x, y, r1, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Secondary delayed ring
+      if (dt > 0.25) {
+        const u2 = Math.min(1, (dt - 0.25) / 2.1);
+        const r2 = 8 + Math.pow(u2, 0.75) * 76;
+        const a2 = Math.max(0, (1 - u2) * 0.45);
+        ctx.globalAlpha = a2;
+        ctx.beginPath();
+        ctx.arc(x, y, r2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 7. MAIN ANIMATION LOOP & UI SYNCHRONIZATION
+    // =========================================================================
+    const uiCurrentYear = document.getElementById('uiCurrentYear');
+    const uiTimeReadout = document.getElementById('uiTimeReadout');
+    const timeScrubber = document.getElementById('timeScrubber');
+    const playIcon = document.getElementById('playIcon');
+
+    function formatMMSS(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${m < 10 ? '0' + m : m}:${r < 10 ? '0' + r : r}`;
+    }
+
+    function renderScene(t) {
+      const curYear = timeToYear(t);
+      const curScrollPx = yearToScrollPx(curYear);
+
+      drawBackground(t, curScrollPx);
+      drawEraBands(curYear, curScrollPx);
+      drawTimelineAxis(curYear, curScrollPx, t);
+      drawConstellationStars(curYear, t);
+      drawStreamsAndHeads(curYear, curScrollPx, t);
+      drawIntroCard(t);
+      drawMilestoneHeader(t);
+      drawTopBar(t);
+      drawScientificNotes(t);
+
+      // Update bottom transport bar
+      const mIdx = getActiveMilestoneIndex(t);
+      const activeTitle = mIdx >= 0 ? MILESTONES[mIdx].title : 'Discovery of Nuclein';
+      uiCurrentYear.textContent = `${mIdx >= 0 ? MILESTONES[mIdx].year : 1869} · ${activeTitle}`;
+      uiTimeReadout.textContent = `${formatMMSS(t)} / 01:30`;
+      if (document.activeElement !== timeScrubber) {
+        timeScrubber.value = t.toFixed(2);
+      }
+    }
+
+    function tick(now) {
+      const dt = Math.min(0.1, (now - lastFrameTs) / 1000);
+      lastFrameTs = now;
+
+      if (isPlaying) {
+        currentTime += dt * playbackSpeed;
+        if (currentTime >= TOTAL_DURATION) {
+          currentTime = TOTAL_DURATION;
+          isPlaying = false;
+          playIcon.textContent = '▶';
+          if (mediaRecorder && mediaRecorder.state === 'recording') {
+            stopVideoRecording();
+          }
+        }
+      }
+
+      renderScene(currentTime);
+      requestAnimationFrame(tick);
+    }
+
+    // =========================================================================
+    // 8. INTERACTIVE CONTROLS, MODALS & WEBM VIDEO EXPORT
+    // =========================================================================
+    function togglePlay() {
+      if (currentTime >= TOTAL_DURATION - 0.1) {
+        currentTime = 0;
+      }
+      isPlaying = !isPlaying;
+      playIcon.textContent = isPlaying ? '❚❚' : '▶';
+    }
+
+    document.getElementById('btnPlayPause').addEventListener('click', togglePlay);
+    canvas.addEventListener('click', togglePlay);
+
+    document.getElementById('btnRestart').addEventListener('click', () => {
+      currentTime = 0;
+      isPlaying = true;
+      playIcon.textContent = '❚❚';
+    });
+
+    timeScrubber.addEventListener('input', (e) => {
+      currentTime = parseFloat(e.target.value) || 0;
+      renderScene(currentTime);
+    });
+
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playbackSpeed = parseFloat(btn.getAttribute('data-speed')) || 1;
+        document.querySelectorAll('.speed-btn').forEach(b => {
+          b.className = 'speed-btn px-2 py-1 rounded-md text-[11px] font-mono text-zinc-400 hover:text-white transition';
+        });
+        btn.className = 'speed-btn px-2 py-1 rounded-md text-[11px] font-mono bg-zinc-700 text-white transition';
+      });
+    });
+
+    // Clean Reel Frame Mode (hides controls for pure 9:16 screen capture)
+    document.getElementById('btnCleanMode').addEventListener('click', () => {
+      document.body.classList.add('clean-mode');
+    });
+    document.getElementById('btnExitClean').addEventListener('click', () => {
+      document.body.classList.remove('clean-mode');
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key === 'Escape') {
+        document.body.classList.remove('clean-mode');
+        document.getElementById('milestoneModal').classList.add('hidden');
+        document.getElementById('milestoneModal').classList.remove('flex');
+        document.getElementById('pythonModal').classList.add('hidden');
+        document.getElementById('pythonModal').classList.remove('flex');
+      }
+    });
+
+    // Populate Milestone Jump Modal
+    const milestoneListEl = document.getElementById('milestoneList');
+    MILESTONES.forEach((m) => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'w-full text-left px-3 py-2.5 hover:bg-zinc-800/80 rounded-xl flex items-center justify-between gap-3 transition';
+      row.innerHTML = `
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="font-serif text-base text-amber-300 font-semibold w-12 shrink-0">${m.year}</span>
+          <div class="truncate">
+            <div class="font-medium text-zinc-100 truncate">${m.title}</div>
+            <div class="text-[11px] text-zinc-400 font-mono truncate">${m.subtitle}</div>
+          </div>
+        </div>
+        <span class="text-[11px] font-mono text-zinc-500 shrink-0">${formatMMSS(m.tStart)}</span>
+      `;
+      row.addEventListener('click', () => {
+        currentTime = m.tStart + 0.15;
+        isPlaying = true;
+        playIcon.textContent = '❚❚';
+        document.getElementById('milestoneModal').classList.add('hidden');
+        document.getElementById('milestoneModal').classList.remove('flex');
+      });
+      milestoneListEl.appendChild(row);
+      const sourceLink = document.createElement('a');
+      sourceLink.href = m.source;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Source ' + String(MILESTONES.indexOf(m) + 1).padStart(2, '0') + ' ↗';
+      sourceLink.style.cssText = 'display:block;color:#93c5fd;padding:0 12px 12px;font-size:12px';
+      milestoneListEl.appendChild(sourceLink);
+    });
+
+    document.getElementById('btnMilestoneModal').addEventListener('click', () => {
+      const modal = document.getElementById('milestoneModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+    document.getElementById('btnCloseMilestones').addEventListener('click', () => {
+      const modal = document.getElementById('milestoneModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    // Toast Notification helper
+    let toastTimer = null;
+    function showToast(msg, durationMs = 3500) {
+      const banner = document.getElementById('toastBanner');
+      document.getElementById('toastText').textContent = msg;
+      banner.classList.remove('hidden');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => banner.classList.add('hidden'), durationMs);
+    }
+
+    // 1-Click 1080x1920 WebM Video Recording directly from the Canvas
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    const btnRecordVideo = document.getElementById('btnRecordVideo');
+    const recordLabel = document.getElementById('recordLabel');
+    const recordDot = document.getElementById('recordDot');
+
+    function stopVideoRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    btnRecordVideo.addEventListener('click', async () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopVideoRecording();
+        return;
+      }
+      if (!canvas.captureStream || typeof MediaRecorder === 'undefined') {
+        showToast('Video capture is not supported in this browser context.');
+        return;
+      }
+      try {
+        await document.fonts.ready;
+        playbackSpeed = 1;
+        document.querySelector('[data-speed="1"]').click();
+        const stream = canvas.captureStream(60);
+        const mimeTypes = [
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm'
+        ];
+        const selectedMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || '';
+        recordedChunks = [];
+        mediaRecorder = selectedMime
+          ? new MediaRecorder(stream, { mimeType: selectedMime, videoBitsPerSecond: 12000000 })
+          : new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: selectedMime || 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'pcr_history_1869_2026_reel_1080x1920.webm';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          recordLabel.textContent = 'Export .WebM';
+          recordDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+          showToast('Downloaded 1080×1920 Reel video (.webm)!');
+        };
+
+        // Restart from 0:00 and record
+        currentTime = 0;
+        isPlaying = true;
+        playIcon.textContent = '❚❚';
+        mediaRecorder.start(200);
+        recordLabel.textContent = 'Stop & Save';
+        recordDot.className = 'w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping';
+        showToast('Recording 1080×1920 Reel... Click "Stop & Save" anytime to download.');
+      } catch (err) {
+        showToast('Recording error: ' + err.message);
+      }
+    });
+
+    // =========================================================================
+    // 9. SAME-CANVAS PYTHON EXPORTER
+    // =========================================================================
+    const PYTHON_SCRIPT_SOURCE = "#!/usr/bin/env python3\n\"\"\"Render this HTML's actual canvas to MP4; includes every label and effect.\nSetup: pip install playwright\n       python -m playwright install chromium\nInstall FFmpeg and ensure ffmpeg is on PATH.\nUsage: python export_pcr.py path/to/animation.html --output pcr_history.mp4\nOptional: --fps 30 --duration 5 (short preview). Full default duration: 90 seconds.\nFonts use web fonts when available, otherwise the HTML's system-font fallbacks.\n\"\"\"\nimport argparse, base64, shutil, subprocess\nfrom pathlib import Path\nfrom playwright.sync_api import sync_playwright\n\ndef main():\n    ap = argparse.ArgumentParser(description=__doc__)\n    ap.add_argument('html', type=Path)\n    ap.add_argument('--output', default='pcr_history.mp4')\n    ap.add_argument('--fps', type=int, default=30)\n    ap.add_argument('--duration', type=float, default=90)\n    args = ap.parse_args()\n    if not args.html.is_file(): ap.error('HTML file not found')\n    if not 1 <= args.fps <= 60: ap.error('fps must be 1\u201360')\n    if not 0 < args.duration <= 90: ap.error('duration must be >0 and <=90')\n    ffmpeg = shutil.which('ffmpeg')\n    if not ffmpeg: ap.error('Install FFmpeg and add it to PATH')\n    with sync_playwright() as pw:\n        browser = pw.chromium.launch(headless=True)\n        page = browser.new_page(viewport={'width':1080,'height':1920}, device_scale_factor=1)\n        page.goto(args.html.resolve().as_uri() + '?render=1', wait_until='load')\n        page.evaluate('document.fonts.ready')\n        command = [ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe', '-vcodec', 'png',\n                   '-framerate', str(args.fps), '-i', '-', '-an', '-c:v', 'libx264',\n                   '-pix_fmt', 'yuv420p', '-crf', '18', '-movflags', '+faststart', args.output]\n        proc = subprocess.Popen(command, stdin=subprocess.PIPE)\n        try:\n            frames = round(args.duration * args.fps)\n            for f in range(frames):\n                data = page.evaluate('(t) => {renderScene(t); return canvas.toDataURL(\"image/png\").split(\",\")[1];}', f/args.fps)\n                proc.stdin.write(base64.b64decode(data))\n                if f % args.fps == 0: print(f'Rendered {f//args.fps}/{args.duration:g} seconds', flush=True)\n            proc.stdin.close()\n            if proc.wait(): raise RuntimeError('FFmpeg failed')\n        except BaseException:\n            proc.kill()\n            proc.wait()\n            raise\n        finally:\n            browser.close()\n    print('Saved', args.output)\n\nif __name__ == '__main__':\n    main()\n";
+
+    const pythonCodeBlock = document.getElementById('pythonCodeBlock');
+    pythonCodeBlock.textContent = PYTHON_SCRIPT_SOURCE;
+
+    document.getElementById('btnPythonModal').addEventListener('click', () => {
+      const modal = document.getElementById('pythonModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+    document.getElementById('btnClosePython').addEventListener('click', () => {
+      const modal = document.getElementById('pythonModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+    document.getElementById('btnCopyPython').addEventListener('click', () => {
+      try {
+        navigator.clipboard.writeText(PYTHON_SCRIPT_SOURCE);
+        showToast('Copied standalone Python MP4 generator script to clipboard!');
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = PYTHON_SCRIPT_SOURCE;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('Copied standalone Python MP4 generator script to clipboard!');
+      }
+    });
+
+    // Start animation loop on load
+    window.onload = async () => {
+      await document.fonts.ready;
+      if (new URLSearchParams(location.search).has('render')) { isPlaying = false; renderScene(0); return; }
+      lastFrameTs = performance.now();
+      requestAnimationFrame(tick);
+    };
+  </script>
+</body>
+</html>
